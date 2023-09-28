@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  fastapi:
+    build: .
+    container_name: shoe_shop_fastapi
+    restart: always
+    ports:
+      - 8000:8000
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--lifespan", "on", "--reload"]
+    volumes:
+      - ./app:/app/app
+    environment:
+      - DATABASE_URL=postgres://admin:secret@shoe_shop_postgres:5432/shoe_shop_db
+
+  postgresql:
+    image: postgres:13.3
+    container_name: shoe_shop_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: shoe_shop_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  pgweb:
+    container_name: shoe_shop_pgweb
+    restart: always
+    image: sosedoff/pgweb
+    ports:
+      - "8081:8081"
+    environment:
+      - DATABASE_URL=postgres://admin:secret@shoe_shop_postgres:5432/shoe_shop_db?sslmode=disable
+    depends_on:
+      - postgresql
+
+volumes:
+  db-data:
