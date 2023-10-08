@@ -32,3 +32,18 @@ create table order_shoes (
     shoe_id int references shoes(id),
     primary key (order_id, shoe_id)
 );
+
+
+-- seedings: 
+
+insert into brands (name) values ('Nike'), ('Adidas'), ('Puma');
+
+insert into shoes (name, brand_id, price) values 
+    ('Air Max', 1, 150.00),
+    ('Yeezy', 2, 200.00),
+    ('Clyde', 3, 120.00);
+
+insert into users (first_name, last_name) values 
+    ('Alice', 'Anderson'),
+    ('Bob', 'Brown'),
+    ('Charlie', 'Clark');
