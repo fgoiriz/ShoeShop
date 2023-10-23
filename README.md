@@ -49,6 +49,7 @@ PUT /users/{id}
 DELETE /users/{id}
 
 POST /orders payload: {shoe_id, user_id} - create a new order
+we can post multiple shoe_id's as a List
 
 GET /shoes/{show_id}/orders - get all orders for a specific shoe
 GET /users/{user_id}/orders - get all orders for a specific user

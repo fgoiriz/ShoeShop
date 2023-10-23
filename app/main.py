@@ -68,8 +68,10 @@ def delete_user(user_id: int, db: Commands = Depends(get_db)):
 
 
 @app.post("/orders", tags=["Orders"])
-def create_order(shoe_id: int, user_id: int, db: Commands = Depends(get_db)):
-    return db.execute(f"insert into orders (shoe_id, user_id, total_amount) values ({shoe_id}, {user_id}, (select price from shoes where id = {shoe_id}))")
+def create_order(shoe_ids: list, user_id: int, db: Commands = Depends(get_db)):
+    for shoe_id in shoe_ids:
+        db.execute(f"insert into orders (shoe_id, user_id) values ({shoe_id}, {user_id})")
+    return {"message": "Order created"}
 
 
 @app.get("/shoes/{shoe_id}/orders", tags=["Shoes"])
