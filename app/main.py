@@ -69,26 +69,31 @@ def delete_user(user_id: int, db: Commands = Depends(get_db)):
 
 
 @app.post("/orders", tags=["Orders"])
-def create_order(shoe_ids: list[int], user_id: int, db: Commands = Depends(get_db)):
-    for shoe_id in shoe_ids:
-        db.execute(f"insert into orders (shoe_id, user_id) values ({shoe_id}, {user_id})")
-    return {"message": "Order created"}
-
+def create_order(shoe_ids: int, user_id: int, db: Commands = Depends(get_db)):
+    return db.execute(f"insert into orders (shoe_id, user_id) values ({shoe_ids}, {user_id})")
 
 @app.get("/shoes/{shoe_id}/orders", tags=["Shoes"])
 def get_shoe_orders(shoe_id: int, db: Commands = Depends(get_db)):
-    return db.query(f"select * from orders where shoe_id = {shoe_id}")
-
+    response = db.query(f"select orders.id, orders.shoe_id, orders.user_id, shoes.price from orders join shoes on orders.shoe_id = shoes.id where orders.shoe_id = {shoe_id}")
+    total_amount = db.query(f"select sum(shoes.price) as total_amount from orders join shoes on orders.shoe_id = shoes.id where orders.shoe_id = {shoe_id}")
+    response.append({"total_amount": total_amount[0]["total_amount"]})
+    return response
 
 @app.get("/users/{user_id}/orders", tags=["Users"])
 def get_user_orders(user_id: int, db: Commands = Depends(get_db)):
-    return db.query(f"select * from orders where user_id = {user_id}")
+    response = db.query(f"select orders.id, orders.shoe_id, orders.user_id, shoes.price from orders join shoes on orders.shoe_id = shoes.id where orders.user_id = {user_id}")
+    total_amount = db.query(f"select sum(shoes.price) as total_amount from orders join shoes on orders.shoe_id = shoes.id where orders.user_id = {user_id}")
+    response.append({"total_amount": total_amount[0]["total_amount"]})
+    return response
 
 
 @app.get("/brands/{brand_id}/orders", tags=["Brands"])
 def get_brand_orders(brand_id: int, db: Commands = Depends(get_db)):
-    return db.query(f"select * from orders join shoes on orders.shoe_id = shoes.id where shoes.brand_id = {brand_id}")
-
+    response = db.query(f"select orders.id, orders.shoe_id, orders.user_id, shoes.price from orders join shoes on orders.shoe_id = shoes.id where shoes.brand_id = {brand_id}")
+    total_amount = db.query(f"select sum(shoes.price) as total_amount from orders join shoes on orders.shoe_id = shoes.id where shoes.brand_id = {brand_id}")
+    response.append({"total_amount": total_amount[0]["total_amount"]})
+    return response
+    
 
 @app.get("/search/{search_string}", tags=["Search"])
 def search(search_string: str, db: Commands = Depends(get_db)):

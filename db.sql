@@ -23,7 +23,6 @@ CREATE TABLE orders (
     id serial primary key,
     user_id int,
     shoe_id int,
-    total_amount int not null,
     date_of_order date default current_date
 );
 
