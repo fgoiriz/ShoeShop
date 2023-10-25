@@ -19,7 +19,7 @@ create table users (
 );
 
 
-CREATE TABLE orders (
+create table orders (
     id serial primary key,
     user_id int,
     shoe_id int,
